@@ -1,0 +1,35 @@
+version: "3.9"
+
+name: medt-auth-expressj
+
+services:
+
+  medt-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    restart: unless-stopped
+
+    ports:
+      - "8003:3000"
+
+    env_file:
+      - path: ./.env.dev-docker
+
+    depends_on:
+      - medt-db
+
+  medt-db:
+    image: mariadb
+
+    restart: unless-stopped
+
+    environment:
+      MARIADB_ROOT_PASSWORD: 4xhits_MEDT
+
+    volumes:
+      - /C/tmp/mariadb_4xhits/data:/var/lib/mysql:Z
+
+    ports:
+      - "33306:3306"

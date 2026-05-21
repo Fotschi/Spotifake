@@ -1,0 +1,29 @@
+version: "3.9"
+
+name: spotifake-backend
+
+services:
+  spotifake-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - path: ./.env.dev-docker
+    depends_on:
+      - spotifake-db
+
+  spotifake-db:
+    image: mongo:latest
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: spotifake
+    ports:
+      - "27017:27017"
+    volumes:
+      - spotifake_data:/data/db
+
+volumes:
+  spotifake_data:

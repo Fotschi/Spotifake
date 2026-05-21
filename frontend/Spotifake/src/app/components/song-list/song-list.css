@@ -1,0 +1,36 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.song-card {
+  background: #282828; /* Heller als der Hintergrund */
+  padding: 1rem;
+  border-radius: 8px;
+  transition: background 0.3s;
+  color: white;
+}
+
+.song-card h3, .song-card p {
+  color: white !important;
+  margin: 0.2rem 0;
+}
+
+.song-card:hover {
+  background: #282828;
+}
+
+.song-card.active {
+  border: 1px solid #1db954;
+}
+
+button {
+  background: #1db954;
+  color: black;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}

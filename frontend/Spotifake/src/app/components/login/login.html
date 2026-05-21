@@ -1,0 +1,12 @@
+<div class="user-info">
+  @if (auth.isLoggedIn()) {
+    <span>Willkommen, <b>{{ auth.currentUser()?.username }}</b></span>
+    <button (click)="auth.logout()">Logout</button>
+  } @else {
+    <div class="login-form">
+      <input [(ngModel)]="username" placeholder="Username" />
+      <input [(ngModel)]="password" type="password" placeholder="Passwort" />
+      <button (click)="doLogin()">Login</button>
+    </div>
+  }
+</div>

@@ -1,0 +1,118 @@
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
+import fs from 'fs';
+
+// WICHTIG: Wir müssen das Modell importieren, damit Mongoose es kennt!
+import User from '../models/User.js'; 
+import songRepository from '../repositories/songRepository.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'spotifake_geheimnis_123';
+
+/***** Merksatz: ****
+*👉 Services denken.*
+*********************/
+
+// Hier sammeln wir alle wichtigen Funktionen für die Logik
+const service = {
+    // --- AUTH (USER) ---
+    register: async (username, password) => {
+        if (!username || !password) return { error: 'Name und Passwort fehlen!' };
+        
+        // Passwort verschlüsseln
+        const passwordHash = await bcrypt.hash(password, 10);
+        
+        // In die Datenbank speichern (via Repository)
+        // Wir nutzen hier das songRepository (oder ein allgemeines), 
+        // aber der Einfachheit halber direkt das User-Model
+        const User = mongoose.model('User');
+        const newUser = new User({ username, passwordHash });
+        return await newUser.save();
+    },
+
+    login: async (username, password) => {
+        const User = mongoose.model('User');
+        const user = await User.findOne({ username });
+
+        if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+            return { error: 'Falsche Zugangsdaten!' };
+        }
+
+        // Token erstellen (Der "Ausweis" für den User)
+        const payload = { sub: user._id, username: user.username };
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h', jwtid: uuidv4() });
+        
+        return { token: token, user: { id: user._id, username: user.username } };
+    },
+
+    // --- SONGS ---
+    getSongs: async (query) => {
+        // Wenn ein Suchbegriff da ist, suchen wir danach, sonst alle
+        if (query) {
+            return await songRepository.search(query);
+        }
+        return await songRepository.findAll();
+    },
+
+    uploadSong: async (title, artist, file, userId) => {
+        if (!file) return { error: 'Keine Datei hochgeladen!' };
+
+        // Song-Daten in die Datenbank schreiben
+        return await songRepository.create({
+            title,
+            artist,
+            filePath: file.path,
+            mimetype: file.mimetype,
+            uploadedBy: userId
+        });
+    },
+
+    getStream: async (id, range) => {
+        const song = await songRepository.findById(id);
+        if (!song) return null;
+
+        // WICHTIG: Den Pfad so anpassen, dass er vom Hauptordner aus gefunden wird
+        const filePath = song.filePath;
+        
+        if (!fs.existsSync(filePath)) {
+            console.log('❌ Datei nicht gefunden auf der Festplatte:', filePath);
+            return null;
+        }
+
+        const stat = fs.statSync(filePath);
+// ... rest of method
+        const fileSize = stat.size;
+
+        // Streaming-Logik (Häppchenweise senden)
+        if (range) {
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            const chunksize = (end - start) + 1;
+            const fileStream = fs.createReadStream(filePath, { start, end });
+            
+            return {
+                status: 206, // Partial Content
+                headers: {
+                    'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+                    'Accept-Ranges': 'bytes',
+                    'Content-Length': chunksize,
+                    'Content-Type': song.mimetype || 'audio/mpeg',
+                },
+                stream: fileStream
+            };
+        } else {
+            return {
+                status: 200,
+                headers: {
+                    'Content-Length': fileSize,
+                    'Content-Type': song.mimetype || 'audio/mpeg',
+                },
+                stream: fs.createReadStream(filePath)
+            };
+        }
+    }
+};
+
+export default service;

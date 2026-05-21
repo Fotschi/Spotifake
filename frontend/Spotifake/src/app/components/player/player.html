@@ -1,0 +1,17 @@
+@if (music.currentSong()) {
+  <footer class="player-bar">
+    <div class="current-info">
+      <b>{{ music.currentSong()?.title }}</b> - {{ music.currentSong()?.artist }}
+    </div>
+    <div class="controls">
+      <button (click)="music.togglePlay()">
+        {{ music.isPlaying() ? '⏸️ Pause' : '▶️ Play' }}
+      </button>
+    </div>
+    <div class="status">
+      @if (music.isPlaying()) {
+        <span class="playing-pulse">Streaming...</span>
+      }
+    </div>
+  </footer>
+}

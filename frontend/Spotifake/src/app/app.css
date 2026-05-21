@@ -1,0 +1,128 @@
+:root {
+  --spotify-gruen: #1db954;
+  --hintergrund: #121212;
+  --karten-grau: #282828;
+}
+
+body {
+  margin: 0;
+  background-color: var(--hintergrund);
+  color: white; /* Schrift überall WEISS machen */
+  font-family: Arial, sans-serif;
+}
+
+/* Der große Kasten um alles */
+.app-container {
+  padding: 20px;
+}
+
+/* Überschriften */
+h1, h2, h3 {
+  color: white;
+}
+
+/* Knöpfe allgemein */
+button {
+  background-color: var(--spotify-gruen);
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+/* LOGIN SEITE (VOLLBILD) */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #000;
+}
+
+.login-container {
+  background: var(--karten-grau);
+  padding: 40px;
+  border-radius: 15px;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.login-container h1 {
+  margin-bottom: 30px;
+  font-size: 2.5rem;
+}
+
+.login-container input {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background: #333;
+  color: white;
+  box-sizing: border-box;
+}
+
+.login-container button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+}
+
+/* HAUPTSEITE (NACH LOGIN) */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+header {
+  padding: 1rem 2rem;
+  background: #000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #333;
+}
+
+/* Die Liste der Lieder */
+.song-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.song-karte {
+  background: var(--karten-grau);
+  padding: 20px;
+  border-radius: 10px;
+  width: 200px;
+  border: 1px solid #444;
+}
+
+.song-karte.aktiv {
+  border-color: var(--spotify-gruen);
+}
+
+/* Der Player ganz unten */
+.player-leiste {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: black;
+  padding: 20px;
+  border-top: 2px solid var(--spotify-gruen);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}

@@ -1,0 +1,33 @@
+.player-bar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: #181818;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #333;
+  box-sizing: border-box;
+}
+
+button {
+  background: #1db954;
+  color: black;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.playing-pulse {
+  color: #1db954;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
