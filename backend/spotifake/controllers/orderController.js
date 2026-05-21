@@ -38,6 +38,11 @@ const controller = {
         const streamInfo = await service.getStream(req.params.id, req.headers.range);
         if (!streamInfo) return res.status(404).send('Nicht gefunden');
         
+        // CORS Header hinzufügen
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, HEAD, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Range, Content-Type');
+        
         res.writeHead(streamInfo.status, streamInfo.headers);
         streamInfo.stream.pipe(res);
     }
