@@ -1,0 +1,40 @@
+<div class="admin-container">
+    <h2>Song Verwaltung</h2>
+
+    <div class="form-section">
+        <h3>{{ editingSongId ? 'Song bearbeiten' : 'Neuen Song hochladen' }}</h3>
+        <input type="text" [(ngModel)]="newSong.title" placeholder="Titel">
+        <input type="text" [(ngModel)]="newSong.artist" placeholder="Interpret">
+        
+        <input *ngIf="!editingSongId" type="file" (change)="onFileSelected($event)" accept="audio/*">
+        
+        <button *ngIf="!editingSongId" (click)="uploadSong()">Hochladen</button>
+        <div *ngIf="editingSongId">
+            <button (click)="updateSong()">Speichern</button>
+            <button (click)="cancelEdit()">Abbrechen</button>
+        </div>
+    </div>
+
+    <hr>
+
+    <h3>Alle Songs</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Titel</th>
+                <th>Interpret</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let song of musicService.songs()">
+                <td>{{ song.title }}</td>
+                <td>{{ song.artist }}</td>
+                <td>
+                    <button (click)="editSong(song)">Bearbeiten</button>
+                    <button (click)="deleteSong(song._id)">Löschen</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

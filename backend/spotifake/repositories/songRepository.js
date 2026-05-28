@@ -1,7 +1,7 @@
 import Song from '../models/Song.js';
 
 /******** Merksatz: ********
-*👉 Repositories speichern.*
+* Repositories speichern.  *
 ****************************/
 
 const songRepository = {
@@ -11,6 +11,7 @@ const songRepository = {
         const song = new Song(songData);
         return await song.save();
     },
+    update: async (id, songData) => await Song.findByIdAndUpdate(id, songData, { new: true }),
     delete: async (id) => await Song.findByIdAndDelete(id),
     search: async (term) => {
         const regex = new RegExp(term, 'i');

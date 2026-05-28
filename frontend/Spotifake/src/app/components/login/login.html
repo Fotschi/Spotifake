@@ -1,12 +1,9 @@
-<div class="user-info">
-  @if (auth.isLoggedIn()) {
-    <span>Willkommen, <b>{{ auth.currentUser()?.username }}</b></span>
-    <button (click)="auth.logout()">Logout</button>
-  } @else {
-    <div class="login-form">
-      <input [(ngModel)]="username" placeholder="Username" />
-      <input [(ngModel)]="password" type="password" placeholder="Passwort" />
-      <button (click)="doLogin()">Login</button>
-    </div>
-  }
+<div class="login-container">
+  <h1>🎧 Spotifake</h1>
+  <p>Bitte melde dich an, um Musik zu hören.</p>
+  
+  <input [(ngModel)]="username" placeholder="Dein Name" />
+  <input [(ngModel)]="password" type="password" placeholder="Passwort" />
+  
+  <button (click)="doLogin()">Jetzt Einloggen</button>
 </div>

@@ -14,6 +14,12 @@ import errorHandling from './middleware/errorHandling.js';
 import openapiSpecification from './generateOpenAPI.js';
 import swaggerUi from 'swagger-ui-express';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: { origin: "*" } });
@@ -25,24 +31,30 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/spotifake'
 if (!fs.existsSync('./uploads')) fs.mkdirSync('./uploads');
 
 // Datenbank verbinden
-mongoose.connect(MONGO_URI).then(() => console.log('✅ Datenbank bereit!'));
+mongoose.connect(MONGO_URI).then(() => console.log('  Datenbank ist ready'));
 
 // Middleware einstellen
-app.use(helmet());
+app.use(helmet({
+    contentSecurityPolicy: false, // Deaktiviert CSP für einfachere Entwicklung/Demo
+}));
 app.use(cors());
 app.use(express.json());
 app.use(logging);
 
+// Statische Dateien (Angular App)
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Swagger Doku (unter /api-docs aufrufbar)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
-// Eine einfache Startseite, damit man nicht "Cannot GET /" sieht
-app.get('/', (req, res) => {
-    res.send('<h1>🎧 Spotifake API läuft!</h1><p>Gehe zu <a href="/api-docs">/api-docs</a> für die Dokumentation.</p>');
-});
-
 // UNSERE API BENUTZEN (unter /api/v1)
 app.use('/api/v1', apiRouter);
+
+// SPA Routing: Alle anderen Anfragen an index.html senden
+app.get(/.*/, (req, res) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/api-docs')) return;
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // WEBSOCKETS (Echtzeit)
 io.on('connection', (socket) => {

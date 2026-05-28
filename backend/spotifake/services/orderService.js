@@ -4,17 +4,17 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs';
 
-// WICHTIG: Wir müssen das Modell importieren, damit Mongoose es kennt!
+// immer model impotieren sonst mongoose schreit rum
 import User from '../models/User.js'; 
 import songRepository from '../repositories/songRepository.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'spotifake_geheimnis_123';
 
 /***** Merksatz: ****
-*👉 Services denken.*
+*   Services denken.*
 *********************/
 
-// Hier sammeln wir alle wichtigen Funktionen für die Logik
+// Alle wichtigen Funktionen für Controller kommt da hin. Controller ruft Service auf, Service ruft Repository auf, Repository ruft Datenbank auf.
 const service = {
     // --- AUTH (USER) ---
     register: async (username, password) => {
@@ -23,9 +23,8 @@ const service = {
         // Passwort verschlüsseln
         const passwordHash = await bcrypt.hash(password, 10);
         
-        // In die Datenbank speichern (via Repository)
-        // Wir nutzen hier das songRepository (oder ein allgemeines), 
-        // aber der Einfachheit halber direkt das User-Model
+        // In die Datenbank speichern (via UserRepository)
+        
         const User = mongoose.model('User');
         const newUser = new User({ username, passwordHash });
         return await newUser.save();
@@ -39,7 +38,7 @@ const service = {
             return { error: 'Falsche Zugangsdaten!' };
         }
 
-        // Token erstellen (Der "Ausweis" für den User)
+        // Token erstellen mit User-ID und Name als Payload
         const payload = { sub: user._id, username: user.username };
         const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '1h', jwtid: uuidv4() });
         
@@ -48,7 +47,7 @@ const service = {
 
     // --- SONGS ---
     getSongs: async (query) => {
-        // Wenn ein Suchbegriff da ist, suchen wir danach, sonst alle
+        // Wenn ein Suchbegriff da ist, suchen wir danach, sonst halt alle
         if (query) {
             return await songRepository.search(query);
         }
@@ -68,20 +67,36 @@ const service = {
         });
     },
 
+    updateSong: async (id, data) => {
+        const updated = await songRepository.update(id, data);
+        if (!updated) return { error: 'Song nicht gefunden' };
+        return updated;
+    },
+
+    deleteSong: async (id) => {
+        const song = await songRepository.findById(id);
+        if (!song) return { error: 'Song nicht gefunden' };
+
+        // Datei auch vom Dateisystem löschen
+        if (fs.existsSync(song.filePath)) {
+            fs.unlinkSync(song.filePath);
+        }
+
+        return await songRepository.delete(id);
+    },
+
     getStream: async (id, range) => {
         const song = await songRepository.findById(id);
         if (!song) return null;
 
-        // WICHTIG: Den Pfad so anpassen, dass er vom Hauptordner aus gefunden wird
         const filePath = song.filePath;
         
         if (!fs.existsSync(filePath)) {
-            console.log('❌ Datei nicht gefunden auf der Festplatte:', filePath);
+            console.log('Datei wurde nicht gefunden: ', filePath);
             return null;
         }
 
         const stat = fs.statSync(filePath);
-// ... rest of method
         const fileSize = stat.size;
 
         // Streaming-Logik (Häppchenweise senden)

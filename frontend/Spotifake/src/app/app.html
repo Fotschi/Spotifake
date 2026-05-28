@@ -1,59 +1,25 @@
-@if (!auth.currentUser()) {
-  <!-- 1. LOGIN SEITE (Wird nur gezeigt, wenn man nicht eingeloggt ist) -->
-  <div class="login-page">
-    <div class="login-container">
-      <h1>🎧 Spotifake</h1>
-      <p>Bitte melde dich an, um Musik zu hören.</p>
-      
-      <input [(ngModel)]="username" placeholder="Dein Name" />
-      <input [(ngModel)]="password" type="password" placeholder="Passwort" />
-      
-      <button (click)="einloggen()">Jetzt Einloggen</button>
-    </div>
+<!-- NAVIGATION (Nur wenn eingeloggt) -->
+<header *ngIf="auth.isLoggedIn()">
+  <h1>🎧 Spotifake</h1>
+  <nav>
+    <a routerLink="/songs">Bibliothek</a> |
+    <a routerLink="/admin">Verwaltung</a>
+  </nav>
+  <div class="user-info">
+    <span>Hallo, <b>{{ auth.currentUser()?.username }}</b>!</span>
+    <button (click)="auth.logout()" style="margin-left: 20px; padding: 5px 15px;">Logout</button>
   </div>
-} @else {
-  <!-- 2. HAUPTSEITE (Wird erst nach dem Login gezeigt) -->
-  <div class="dashboard-container">
-    
-    <header>
-      <h1>🎧 Spotifake</h1>
-      <div class="user-info">
-        <span>Hallo, <b>{{ auth.currentUser().username }}</b>!</span>
-        <button (click)="auth.logout()" style="margin-left: 20px; padding: 5px 15px;">Logout</button>
-      </div>
-    </header>
+</header>
 
-    <main style="padding: 20px;">
-      <h2>Deine Mediathek</h2>
-      <div class="song-grid">
-        @for (song of music.songs(); track song._id) {
-          <div class="song-karte" [class.aktiv]="music.currentSong()?._id === song._id">
-            <h3>{{ song.title }}</h3>
-            <p>von {{ song.artist }}</p>
-            <button (click)="music.play(song)">▶ Abspielen</button>
-          </div>
-        } @empty {
-          <p>Noch keine Musik da. Lade etwas über Swagger hoch!</p>
-        }
-      </div>
-    </main>
+<!-- BENACHRICHTIGUNGEN -->
+<div *ngIf="socketService.lastEvent()" class="toast-notification">
+  {{ socketService.lastEvent() }}
+</div>
 
-    <!-- PLAYER LEISTE (unten fixiert) -->
-    @if (music.currentSong()) {
-      <div class="player-leiste">
-        <div>
-          Gerade läuft: <b>{{ music.currentSong().title }}</b>
-        </div>
-        
-        <button (click)="music.togglePlay()">
-          {{ music.isPlaying() ? '⏸ Pause' : '▶ Abspielen' }}
-        </button>
+<!-- HAUPTINHALT (ROUTING) -->
+<main [class.login-mode]="!auth.isLoggedIn()">
+  <router-outlet></router-outlet>
+</main>
 
-        <div style="color: #1db954;">
-          {{ music.isPlaying() ? 'Musik läuft...' : 'Angehalten' }}
-        </div>
-      </div>
-    }
-
-  </div>
-}
+<!-- PLAYER (Nur wenn eingeloggt) -->
+<app-player *ngIf="auth.isLoggedIn()"></app-player>

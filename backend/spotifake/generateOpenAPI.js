@@ -6,12 +6,12 @@ const options = {
     info: {
       title: 'Spotifake API',
       version: '1.0.0',
-      description: 'API documentation for the Spotifake Music Streaming Backend',
+      description: 'API Dokumentation für Spotifake',
     },
     servers: [
       {
         url: 'http://localhost:3000',
-        description: 'Development server',
+        description: 'Entwicklungs-Server',
       },
     ],
     components: {
@@ -24,7 +24,7 @@ const options = {
         }
     }
   },
-  apis: ['./routes/v1/*.js'], // files containing annotations as above
+  apis: ['./routes/v1/*.js'], 
 };
 
 const openapiSpecification = swaggerJsdoc(options);

@@ -1,16 +1,14 @@
 <section class="song-list">
-  <h2>Aktuelle Songs</h2>
-  <div class="grid">
+  <h2>Deine Mediathek</h2>
+  <div class="song-grid">
     @for (song of music.songs(); track song._id) {
-      <div class="song-card" [class.active]="music.currentSong()?._id === song._id">
-        <div class="info">
-          <h3>{{ song.title }}</h3>
-          <p>{{ song.artist }}</p>
-        </div>
-        <button (click)="music.play(song)">▶️ Play</button>
+      <div class="song-karte" [class.aktiv]="music.currentSong()?._id === song._id">
+        <h3>{{ song.title }}</h3>
+        <p>von {{ song.artist }}</p>
+        <button (click)="music.play(song)">▶ Abspielen</button>
       </div>
     } @empty {
-      <p>Keine Songs gefunden. Lade welche über Swagger hoch!</p>
+      <p>Noch keine Musik da. Lade etwas über Swagger hoch!</p>
     }
   </div>
 </section>

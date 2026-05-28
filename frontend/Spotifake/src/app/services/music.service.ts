@@ -1,9 +1,11 @@
 import { Injectable, signal } from '@angular/core';
+import { SocketService } from './socket.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MusicService {
+  // ... rest der Klasse
   // Hier speichern wir die Liste aller Songs
   songs = signal<any[]>([]);
   
@@ -18,7 +20,7 @@ export class MusicService {
   // DAS IST NEU: Unser echter Audio-Player im Hintergrund
   private audio = new Audio();
 
-  constructor() {
+  constructor(private socketService: SocketService) {
     // Event-Listener für Fehler beim Abspielen
     this.audio.addEventListener('error', (e) => {
       console.error('❌ Audio Fehler:', e);
@@ -58,6 +60,9 @@ export class MusicService {
   play(song: any) {
     this.currentSong.set(song);
     
+    // WebSocket Event senden
+    this.socketService.sendPlayEvent(song);
+
     // Die Adresse zum Streamen bauen
     const streamUrl = `${this.apiUrl}/${song._id}/stream`;
     

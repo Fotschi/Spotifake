@@ -1,0 +1,36 @@
+# Dependency directories
+node_modules/
+backend/spotifake/node_modules/
+backend/authorization_express/node_modules/
+frontend/Spotifake/node_modules/
+
+# Environment files
+.env
+.env.dev
+.env.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+logs/
+*.log
+
+# Build artifacts
+dist/
+build/
+.angular/
+
+# IDE / Editor folders
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Project specific
+backend/spotifake/uploads/*
+!backend/spotifake/uploads/.gitkeep
