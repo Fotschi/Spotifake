@@ -1,0 +1,158 @@
+.playlist-container {
+  padding: 32px;
+  background: linear-gradient(to bottom, #2a2a2a 0%, #121212 300px);
+  min-height: 100%;
+}
+
+.playlist-header {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 32px;
+  position: relative;
+}
+
+.playlist-cover {
+  width: 192px;
+  height: 192px;
+  background: #282828;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 64px;
+  border-radius: 4px;
+}
+
+.playlist-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.type {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.title {
+  font-size: 72px;
+  font-weight: 800;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin: 0;
+}
+
+.meta {
+  color: #b3b3b3;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.btn-delete {
+  background: transparent;
+  border: none;
+  color: #b3b3b3;
+  cursor: pointer;
+  font-size: 20px;
+}
+.btn-delete:hover { color: #e91429; }
+
+.songs-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.list-header {
+  display: flex;
+  padding: 8px 16px;
+  color: #b3b3b3;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  border-bottom: 1px solid #282828;
+  margin-bottom: 16px;
+}
+
+.song-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.song-row:hover {
+  background-color: rgba(255,255,255,0.1);
+}
+
+.song-row:hover .btn-remove {
+  opacity: 1;
+}
+
+.col-title {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.col-artist {
+  flex: 1;
+  color: #b3b3b3;
+  font-size: 14px;
+}
+
+.col-actions {
+  width: 40px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.row-image {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+.row-image.placeholder {
+  background: #282828;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+}
+
+.name {
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+}
+.name.playing {
+  color: #1db954;
+}
+
+.btn-remove {
+  background: transparent;
+  border: none;
+  color: #b3b3b3;
+  cursor: pointer;
+  font-size: 16px;
+  opacity: 0;
+  padding: 4px;
+}
+.btn-remove:hover { color: #ffffff; }
+
+.empty-state {
+  text-align: center;
+  padding: 64px 0;
+  color: #b3b3b3;
+}

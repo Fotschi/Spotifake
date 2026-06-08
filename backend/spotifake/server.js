@@ -8,6 +8,7 @@ import fs from 'fs';
 
 // Unsere Routen laden (wir nennen sie orderRoute wie im Beispiel)
 import { router as apiRouter } from './routes/v1/orderRoute.js';
+import { router as playlistRouter } from './routes/v1/playlistRoute.js';
 import logging from './middleware/logging.js';
 import errorHandling from './middleware/errorHandling.js';
 
@@ -44,11 +45,15 @@ app.use(logging);
 // Statische Dateien (Angular App)
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Uploads Ordner freigeben (für Bilder)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Swagger Doku (unter /api-docs aufrufbar)
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openapiSpecification));
 
-// UNSERE API BENUTZEN (unter /api/v1)
+// Api nutzen (unter /api/v1)
 app.use('/api/v1', apiRouter);
+app.use('/api/v1/playlists', playlistRouter);
 
 // SPA Routing: Alle anderen Anfragen an index.html senden
 app.get(/.*/, (req, res) => {

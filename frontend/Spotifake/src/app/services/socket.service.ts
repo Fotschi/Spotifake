@@ -11,16 +11,16 @@ export class SocketService {
   lastEvent = signal<string | null>(null);
 
   constructor() {
-    // Verbindung zum Backend herstellen
-    this.socket = io('http://localhost:3000');
+    // Verbindung zum Backend herstellen (Relativ zum Host)
+    this.socket = io();
 
     this.socket.on('connect', () => {
-      console.log('✅ WebSocket verbunden!');
+      console.log('WebSocket verbunden!');
     });
 
     // Auf Ereignisse vom Server warten
     this.socket.on('user_playing', (data: any) => {
-      console.log('📢 Jemand hört Musik:', data);
+      console.log('Jemand hört Musik:', data);
       this.lastEvent.set(`Jemand hört gerade: ${data.title} von ${data.artist}`);
       
       // Benachrichtigung nach 5 Sekunden ausblenden

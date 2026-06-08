@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -12,17 +13,52 @@ import { AuthService } from '../../services/auth.service';
 })
 export class LoginComponent {
   auth = inject(AuthService);
+  router = inject(Router);
 
+  isLoginMode = true;
   username = '';
   password = '';
+  loading = false;
+  error = '';
+  successMessage = '';
 
-  async doLogin() {
-    const success = await this.auth.login(this.username, this.password);
-    if (success) {
-      this.username = '';
-      this.password = '';
-    } else {
-      alert('Login fehlgeschlagen!');
+  toggleMode() {
+    this.isLoginMode = !this.isLoginMode;
+    this.error = '';
+    this.successMessage = '';
+  }
+
+  async handleSubmit() {
+    if (!this.username || !this.password) {
+      this.error = 'Bitte fülle alle Felder aus.';
+      return;
     }
+
+    this.loading = true;
+    this.error = '';
+    this.successMessage = '';
+
+    if (this.isLoginMode) {
+      const success = await this.auth.login(this.username, this.password);
+      if (success) {
+        this.successMessage = 'Erfolgreich angemeldet! Weiterleitung...';
+        setTimeout(() => {
+          this.router.navigate(['/songs']);
+        }, 1000);
+      } else {
+        this.error = 'Login fehlgeschlagen. Überprüfe Benutzername und Passwort.';
+      }
+    } else {
+      const success = await this.auth.register(this.username, this.password);
+      if (success) {
+        this.successMessage = 'Account erfolgreich erstellt! Du kannst dich jetzt einloggen.';
+        this.isLoginMode = true;
+        this.username = '';
+        this.password = '';
+      } else {
+        this.error = 'Registrierung fehlgeschlagen. Benutzername eventuell schon vergeben.';
+      }
+    }
+    this.loading = false;
   }
 }

@@ -5,6 +5,7 @@ const songSchema = new mongoose.Schema({
     artist: { type: String, required: true },
     album: { type: String },
     filePath: { type: String, required: true },
+    imagePath: { type: String },
     mimetype: { type: String },
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });

@@ -1,14 +1,43 @@
-<section class="song-list">
-  <h2>Deine Mediathek</h2>
-  <div class="song-grid">
-    @for (song of music.songs(); track song._id) {
-      <div class="song-karte" [class.aktiv]="music.currentSong()?._id === song._id">
-        <h3>{{ song.title }}</h3>
-        <p>von {{ song.artist }}</p>
-        <button (click)="music.play(song)">▶ Abspielen</button>
+<div class="songs-container">
+  <header class="content-header">
+    <h1>Musik Bibliothek</h1>
+    <p>Entdecke neue Sounds</p>
+  </header>
+
+  <div class="songs-grid">
+    <div *ngFor="let song of music.songs()" class="song-card" (click)="music.play(song)" [class.active]="music.currentSong()?._id === song._id">
+      <div class="card-image">
+        <img *ngIf="song.imagePath" [src]="'/' + song.imagePath" class="cover-image" alt="Cover">
+        <span *ngIf="!song.imagePath" class="music-icon">🎵</span>
+        <button class="play-btn">
+          <span *ngIf="music.currentSong()?._id !== song._id || !music.isPlaying()">▶</span>
+          <span *ngIf="music.currentSong()?._id === song._id && music.isPlaying()">⏸</span>
+        </button>
       </div>
-    } @empty {
-      <p>Noch keine Musik da. Lade etwas über Swagger hoch!</p>
-    }
+      <div class="card-info">
+        <div class="title-row">
+          <h3 class="title">{{ song.title }}</h3>
+          <div class="playlist-menu-container">
+            <button class="btn-more" (click)="togglePlaylistMenu(song._id, $event)">⋮</button>
+            <div class="playlist-dropdown" *ngIf="showPlaylistMenuFor === song._id">
+              <div class="dropdown-header">Zur Playlist hinzufügen</div>
+              <div class="dropdown-item" *ngFor="let playlist of playlistService.playlists()" (click)="addToPlaylist(playlist._id, song._id, $event)">
+                {{ playlist.name }}
+              </div>
+              <div class="dropdown-item empty" *ngIf="playlistService.playlists().length === 0">
+                Keine Playlists vorhanden
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="artist">{{ song.artist }}</p>
+      </div>
+    </div>
   </div>
-</section>
+
+  <div *ngIf="music.songs().length === 0" class="empty-state">
+    <span class="icon">🏜️</span>
+    <h3>Noch keine Songs da</h3>
+    <p>Gehe zum Admin Bereich um Musik hochzuladen.</p>
+  </div>
+</div>

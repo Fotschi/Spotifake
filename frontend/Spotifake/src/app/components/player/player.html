@@ -1,15 +1,43 @@
-@if (music.currentSong()) {
-  <div class="player-leiste">
-    <div>
-      Gerade läuft: <b>{{ music.currentSong().title }}</b>
+<div class="player-bar" *ngIf="music.currentSong()">
+  <!-- Current Song Info -->
+  <div class="song-info">
+    <div class="thumbnail">
+      <img *ngIf="music.currentSong().imagePath" [src]="'/' + music.currentSong().imagePath" class="player-cover" alt="Cover">
+      <span *ngIf="!music.currentSong().imagePath">🎵</span>
     </div>
-    
-    <button (click)="music.togglePlay()">
-      {{ music.isPlaying() ? '⏸ Pause' : '▶ Abspielen' }}
-    </button>
-
-    <div style="color: #1db954;">
-      {{ music.isPlaying() ? 'Musik läuft...' : 'Angehalten' }}
+    <div class="details">
+      <div class="title">{{ music.currentSong().title }}</div>
+      <div class="artist">{{ music.currentSong().artist }}</div>
     </div>
   </div>
-}
+
+  <!-- Player Controls -->
+  <div class="controls-container">
+    <div class="controls">
+      <div class="main-controls">
+        <button class="control-btn">⏮</button>
+        <button class="control-btn main" (click)="music.togglePlay()">
+          <span *ngIf="!music.isPlaying()">▶</span>
+          <span *ngIf="music.isPlaying()">⏸</span>
+        </button>
+        <button class="control-btn">⏭</button>
+      </div>
+      
+      <div class="playback-bar">
+        <span>{{ music.formatTime(music.currentTime()) }}</span>
+        <div class="progress-container" (click)="onProgressClick($event)">
+          <div class="progress-bar" [style.width]="getProgressWidth()"></div>
+        </div>
+        <span>{{ music.formatTime(music.duration()) }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Volume / Extras -->
+  <div class="extras">
+    <span class="volume-icon">🔊</span>
+    <div class="volume-bar" (click)="onVolumeClick($event)">
+      <div class="progress" [style.width]="getVolumeWidth()"></div>
+    </div>
+  </div>
+</div>

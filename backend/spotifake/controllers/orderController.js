@@ -29,13 +29,27 @@ const controller = {
     // Song hochladen
     upload: async (req, res) => {
         const { title, artist } = req.body;
-        const result = await service.uploadSong(title, artist, req.file, req.user?.id);
+        const songFile = req.files && req.files['song'] ? req.files['song'][0] : null;
+        const imageFile = req.files && req.files['image'] ? req.files['image'][0] : null;
+        
+        if (!songFile) return res.status(400).json({ error: 'Keine Audiodatei hochgeladen!' });
+
+        const result = await service.uploadSong(title, artist, songFile, imageFile, req.user?.id);
         res.status(201).json(result);
     },
 
-    // Song hochladen
+    // Song aktualisieren
     update: async (req, res) => {
-        const result = await service.updateSong(req.params.id, req.body);
+        const { title, artist } = req.body;
+        const dataToUpdate = { title, artist };
+        
+        // Wenn ein neues Bild hochgeladen wurde, fügen wir den Pfad hinzu
+        if (req.file) {
+            // Um den Pfad web-kompatibel zu machen (Slashes statt Backslashes)
+            dataToUpdate.imagePath = req.file.path.replace(/\\/g, '/');
+        }
+
+        const result = await service.updateSong(req.params.id, dataToUpdate);
         if (result.error) return res.status(404).json(result);
         res.json(result);
     },

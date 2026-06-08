@@ -1,0 +1,48 @@
+<div class="playlist-container" *ngIf="playlist">
+  <div class="playlist-header">
+    <div class="playlist-cover">
+      <span class="icon">🎵</span>
+    </div>
+    <div class="playlist-info">
+      <span class="type">Playlist</span>
+      <h1 class="title">{{ playlist.name }}</h1>
+      <div class="meta">
+        <span class="count">{{ playlist.songs.length }} Songs</span>
+      </div>
+    </div>
+    <div class="actions">
+       <button class="btn-delete" (click)="deletePlaylist()" title="Playlist löschen">🗑️</button>
+    </div>
+  </div>
+
+  <div class="songs-list">
+    <div class="list-header">
+      <div class="col-title">Titel</div>
+      <div class="col-artist">Künstler</div>
+      <div class="col-actions"></div>
+    </div>
+
+    <div *ngFor="let song of playlist.songs" 
+         class="song-row" 
+         (click)="music.play(song)" 
+         [class.active]="music.currentSong()?._id === song._id">
+      
+      <div class="col-title">
+        <img *ngIf="song.imagePath" [src]="'/' + song.imagePath" class="row-image">
+        <div *ngIf="!song.imagePath" class="row-image placeholder">🎵</div>
+        <span class="name" [class.playing]="music.currentSong()?._id === song._id">{{ song.title }}</span>
+      </div>
+      
+      <div class="col-artist">{{ song.artist }}</div>
+      
+      <div class="col-actions">
+        <button class="btn-remove" (click)="removeSong(song._id, $event)" title="Aus Playlist entfernen">✕</button>
+      </div>
+    </div>
+    
+    <div *ngIf="playlist.songs.length === 0" class="empty-state">
+      <h3>Diese Playlist ist noch leer.</h3>
+      <p>Gehe auf die Startseite, um Songs hinzuzufügen.</p>
+    </div>
+  </div>
+</div>

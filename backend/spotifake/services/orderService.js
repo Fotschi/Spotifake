@@ -54,14 +54,18 @@ const service = {
         return await songRepository.findAll();
     },
 
-    uploadSong: async (title, artist, file, userId) => {
-        if (!file) return { error: 'Keine Datei hochgeladen!' };
+    uploadSong: async (title, artist, file, imageFile, userId) => {
+        if (!file) return { error: 'Keine Audiodatei hochgeladen!' };
+
+        // Pfad für das Bild aufbereiten (Backslashes zu Slashes für URLs)
+        const imagePath = imageFile ? imageFile.path.replace(/\\/g, '/') : null;
 
         // Song-Daten in die Datenbank schreiben
         return await songRepository.create({
             title,
             artist,
             filePath: file.path,
+            imagePath: imagePath,
             mimetype: file.mimetype,
             uploadedBy: userId
         });

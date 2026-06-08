@@ -1,43 +1,12 @@
 import express from 'express';
 import multer from 'multer';
-import jwt from 'jsonwebtoken'; 
 import controller from '../../controllers/orderController.js';
-import service from '../../services/orderService.js';
+import checkAuth from '../../middleware/auth.js';
 
 const router = express.Router();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'spotifake_geheimnis_123';
-
 // multer setup (Nur Für Datei-Uploads)
 const upload = multer({ dest: 'uploads/' });
-
-// Auth middelware (schaut ob der User eingeloggt ist)
-function checkAuth(req, res, next) {
-    // Wir schauen nach dem "authorization" Header 
-    const authHeader = req.headers['authorization'] || req.headers['Authorization'];
-    
-    console.log('--- Auth Prüfung ---');
-    console.log('Header empfangen:', authHeader);
-
-    if (!authHeader) {
-        console.log('Fehler: Kein Authorization Header gefunden!');
-        return res.status(401).json({ error: 'Nicht eingeloggt!' });
-    }
-
-    // Token holen also alles nach BEarer 
-    const parts = authHeader.split(' ');
-    const token = parts.length === 2 ? parts[1] : parts[0];
-
-    try {
-        const payload = jwt.verify(token, JWT_SECRET);
-        console.log('Token gültig für User:', payload.username);
-        req.user = { id: payload.sub, username: payload.username };
-        next();
-    } catch (e) {
-        console.log('Fehler: Token ungültig!', e.message);
-        return res.status(401).json({ error: 'Ungültiger Ausweis!' });
-    }
-}
 
 // Routen
 
@@ -127,13 +96,14 @@ router.get('/songs/:id/stream', controller.stream);
  *             type: object
  *             properties:
  *               song: { type: string, format: binary }
+ *               image: { type: string, format: binary }
  *               title: { type: string }
  *               artist: { type: string }
  *     responses:
  *       201:
  *         description: Song hochgeladen
  */
-router.post('/songs', checkAuth, upload.single('song'), controller.upload);
+router.post('/songs', checkAuth, upload.fields([{ name: 'song', maxCount: 1 }, { name: 'image', maxCount: 1 }]), controller.upload);
 
 /**
  * @openapi
@@ -151,17 +121,18 @@ router.post('/songs', checkAuth, upload.single('song'), controller.upload);
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               title: { type: string }
  *               artist: { type: string }
+ *               image: { type: string, format: binary }
  *     responses:
  *       200:
  *         description: Song aktualisiert
  */
-router.put('/songs/:id', checkAuth, controller.update);
+router.put('/songs/:id', checkAuth, upload.single('image'), controller.update);
 
 /**
  * @openapi

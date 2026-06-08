@@ -1,25 +1,58 @@
-<!-- NAVIGATION (Nur wenn eingeloggt) -->
-<header *ngIf="auth.isLoggedIn()">
-  <h1>🎧 Spotifake</h1>
-  <nav>
-    <a routerLink="/songs">Bibliothek</a> |
-    <a routerLink="/admin">Verwaltung</a>
-  </nav>
-  <div class="user-info">
-    <span>Hallo, <b>{{ auth.currentUser()?.username }}</b>!</span>
-    <button (click)="auth.logout()" style="margin-left: 20px; padding: 5px 15px;">Logout</button>
-  </div>
-</header>
+<div class="main-layout" [class.no-shell]="auth.isLoggedIn() === false || router.url === '/' || router.url === '/auth'">
+  
+  <!-- Sidebar (Nur wenn eingeloggt und nicht auf der Entry-Seite) -->
+  <aside *ngIf="auth.isLoggedIn() && router.url !== '/' && router.url !== '/auth'" class="sidebar">
+    <div class="logo">
+      <span class="icon">🎧</span> Spotifake
+    </div>
+    
+    <nav>
+      <a routerLink="/songs" routerLinkActive="active" class="nav-item">
+        <svg role="img" height="24" width="24" class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 3.247a1 1 0 0 0-1 0L4 7.577V20h4.5v-6a1 1 0 0 1 1-1h5a1 1 0 0 1 1 1v6H20V7.577l-7.5-4.33zm-2-1.732a3 3 0 0 1 3 0l7.5 4.33a2 2 0 0 1 1 1.732V21a1 1 0 0 1-1 1h-6.5a1 1 0 0 1-1-1v-6h-3v6a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V7.577a2 2 0 0 1 1-1.732l7.5-4.33z"></path></svg>
+        Home
+      </a>
+      <a routerLink="/admin" routerLinkActive="active" class="nav-item">
+        <svg role="img" height="24" width="24" class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11.466 22.762c-.783-.162-1.397-.732-1.593-1.503l-.403-1.593c-.45-.2-1.045-.552-1.638-.971l-1.465.733a1.758 1.758 0 0 1-2.18-.548l-1.385-1.9a1.761 1.761 0 0 1 .374-2.22l1.246-.995c-.092-.573-.153-1.127-.174-1.579l-1.593-.404a1.754 1.754 0 0 1-1.32-2.122l.441-2.247a1.755 1.755 0 0 1 2.115-1.332l1.6.405c.427-.406 1-.749 1.602-1.026l.707-1.414a1.757 1.757 0 0 1 2.195-.873l2.253.79a1.761 1.761 0 0 1 1.077 2.062l-.434 1.724c.484.227 1.05.576 1.631.986l1.417-.708a1.757 1.757 0 0 1 2.196.536l1.38 1.888a1.762 1.762 0 0 1-.365 2.227l-1.282 1.025c.08.513.137 1.037.16 1.488l1.62.41a1.755 1.755 0 0 1 1.32 2.112l-.44 2.246a1.757 1.757 0 0 1-2.113 1.332l-1.637-.415c-.417.419-1.003.791-1.637 1.09l-.738 1.478a1.757 1.757 0 0 1-2.213.882l-2.235-.783zM12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0-1.5a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"></path></svg>
+        Admin
+      </a>
+    </nav>
 
-<!-- BENACHRICHTIGUNGEN -->
-<div *ngIf="socketService.lastEvent()" class="toast-notification">
-  {{ socketService.lastEvent() }}
+    <div class="playlists-section">
+      <div class="playlists-header">
+        <span class="playlists-title">PLAYLISTS</span>
+        <button class="btn-create-playlist" (click)="createNewPlaylist()" title="Playlist erstellen">
+          <svg role="img" height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="M15.25 8a.75.75 0 0 1-.75.75H8.75v5.75a.75.75 0 0 1-1.5 0V8.75H1.5a.75.75 0 0 1 0-1.5h5.75V1.5a.75.75 0 0 1 1.5 0v5.75h5.75a.75.75 0 0 1 .75.75z"></path></svg>
+        </button>
+      </div>
+      
+      <div class="playlists-list">
+        <a *ngFor="let playlist of playlistService.playlists()" 
+           [routerLink]="['/playlist', playlist._id]" 
+           routerLinkActive="active" 
+           class="playlist-item">
+          {{ playlist.name }}
+        </a>
+      </div>
+    </div>
+    
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <span class="username">{{ auth.currentUser()?.username }}</span>
+        <button (click)="auth.logout()" class="btn-logout">Logout</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Content Area -->
+  <main class="content">
+    <!-- WebSocket Benachrichtigung -->
+    <div *ngIf="socketService.lastEvent()" class="notification">
+      {{ socketService.lastEvent() }}
+    </div>
+
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Player (Nur wenn eingeloggt und nicht auf der Entry-Seite) -->
+  <app-player *ngIf="auth.isLoggedIn()"></app-player>
 </div>
-
-<!-- HAUPTINHALT (ROUTING) -->
-<main [class.login-mode]="!auth.isLoggedIn()">
-  <router-outlet></router-outlet>
-</main>
-
-<!-- PLAYER (Nur wenn eingeloggt) -->
-<app-player *ngIf="auth.isLoggedIn()"></app-player>

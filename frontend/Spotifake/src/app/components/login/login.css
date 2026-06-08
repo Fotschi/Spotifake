@@ -1,26 +1,133 @@
-.login-form {
+.auth-wrapper {
+  background: linear-gradient(to bottom, #2a2a2a 0%, #000000 100%);
+  min-height: 100vh;
   display: flex;
-  gap: 0.5rem;
+  flex-direction: column;
+  align-items: center;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
 }
 
-.login-form input {
-  padding: 0.5rem;
+.auth-header {
+  padding: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -2px;
+}
+
+.auth-content {
+  max-width: 450px;
+  width: 100%;
+  padding: 32px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 40px;
+  letter-spacing: -2px;
+  line-height: 1.1;
+}
+
+.form-group {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 14px;
+  background-color: #121212;
+  border: 1px solid #727272;
   border-radius: 4px;
-  border: 1px solid #444;
-  background: #282828;
-  color: white;
+  color: #ffffff;
+  font-size: 16px;
+  transition: border-color 0.2s;
 }
 
-button {
-  background: #1db954;
-  color: black;
+.form-group input:focus {
+  outline: none;
+  border-color: #ffffff;
+  background-color: #2a2a2a;
+}
+
+.form-group input::placeholder {
+  color: #727272;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 16px;
+  background-color: #1db954;
+  color: #000000;
   border: none;
-  padding: 0.5rem 1.5rem;
-  border-radius: 20px;
-  font-weight: bold;
+  border-radius: 500px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.2s;
 }
 
-button:hover {
-  transform: scale(1.05);
+.btn-primary:hover {
+  background-color: #1ed760;
+  transform: scale(1.02);
+}
+
+.divider {
+  height: 1px;
+  background-color: #292929;
+  margin: 40px 0;
+}
+
+.toggle-section p {
+  color: #b3b3b3;
+  font-size: 16px;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.btn-outline {
+  width: 100%;
+  padding: 14px;
+  background-color: transparent;
+  color: #ffffff;
+  border: 1px solid #727272;
+  border-radius: 500px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  border-color: #ffffff;
+  transform: scale(1.02);
+}
+
+.error-box {
+  background-color: #e91429;
+  color: #ffffff;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
 }

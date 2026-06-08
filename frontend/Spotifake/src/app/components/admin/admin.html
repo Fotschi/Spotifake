@@ -1,40 +1,68 @@
 <div class="admin-container">
-    <h2>Song Verwaltung</h2>
+  <header class="content-header">
+    <h1>Verwaltung</h1>
+    <p>Lade neue Musik hoch oder bearbeite die Bibliothek</p>
+  </header>
 
-    <div class="form-section">
-        <h3>{{ editingSongId ? 'Song bearbeiten' : 'Neuen Song hochladen' }}</h3>
-        <input type="text" [(ngModel)]="newSong.title" placeholder="Titel">
-        <input type="text" [(ngModel)]="newSong.artist" placeholder="Interpret">
-        
-        <input *ngIf="!editingSongId" type="file" (change)="onFileSelected($event)" accept="audio/*">
-        
-        <button *ngIf="!editingSongId" (click)="uploadSong()">Hochladen</button>
-        <div *ngIf="editingSongId">
-            <button (click)="updateSong()">Speichern</button>
-            <button (click)="cancelEdit()">Abbrechen</button>
-        </div>
+  <section class="upload-section glass-card">
+    <h2>{{ editingSongId ? 'Song bearbeiten' : 'Neuen Song hochladen' }}</h2>
+    
+    <div class="form-grid">
+      <div class="input-group">
+        <label>Titel</label>
+        <input type="text" [(ngModel)]="newSong.title" placeholder="z.B. Bohemian Rhapsody">
+      </div>
+      
+      <div class="input-group">
+        <label>Künstler</label>
+        <input type="text" [(ngModel)]="newSong.artist" placeholder="z.B. Queen">
+      </div>
+      
+      <div class="input-group" *ngIf="!editingSongId">
+        <label>Audio Datei (MP3)</label>
+        <input type="file" (change)="onFileSelected($event)" accept="audio/*">
+      </div>
+
+      <div class="input-group">
+        <label>Cover Bild (Optional)</label>
+        <input type="file" (change)="onImageSelected($event)" accept="image/*">
+      </div>
     </div>
 
-    <hr>
+    <div class="form-actions">
+      <button *ngIf="!editingSongId" (click)="uploadSong()" class="btn-primary" [disabled]="loading">
+        {{ loading ? 'Wird hochgeladen...' : 'Hochladen' }}
+      </button>
+      
+      <div *ngIf="editingSongId" class="edit-actions">
+        <button (click)="updateSong()" class="btn-primary" [disabled]="loading">Speichern</button>
+        <button (click)="cancelEdit()" class="btn-secondary">Abbrechen</button>
+      </div>
+    </div>
+  </section>
 
-    <h3>Alle Songs</h3>
-    <table>
+  <section class="list-section">
+    <h2>Bibliothek</h2>
+    <div class="song-table-container">
+      <table class="song-table">
         <thead>
-            <tr>
-                <th>Titel</th>
-                <th>Interpret</th>
-                <th>Aktionen</th>
-            </tr>
+          <tr>
+            <th>Titel</th>
+            <th>Künstler</th>
+            <th class="actions">Aktionen</th>
+          </tr>
         </thead>
         <tbody>
-            <tr *ngFor="let song of musicService.songs()">
-                <td>{{ song.title }}</td>
-                <td>{{ song.artist }}</td>
-                <td>
-                    <button (click)="editSong(song)">Bearbeiten</button>
-                    <button (click)="deleteSong(song._id)">Löschen</button>
-                </td>
-            </tr>
+          <tr *ngFor="let song of musicService.songs()">
+            <td>{{ song.title }}</td>
+            <td>{{ song.artist }}</td>
+            <td class="actions">
+              <button (click)="editSong(song)" class="btn-icon">✏️</button>
+              <button (click)="deleteSong(song._id)" class="btn-icon delete">🗑️</button>
+            </td>
+          </tr>
         </tbody>
-    </table>
+      </table>
+    </div>
+  </section>
 </div>
