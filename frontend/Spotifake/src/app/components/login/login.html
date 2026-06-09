@@ -32,6 +32,23 @@
       </div>
     </div>
 
+    <!-- Error Modal for Registration -->
+    <div *ngIf="showErrorModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 style="color: #e91429;">✗ Registrierung fehlgeschlagen</h2>
+        </div>
+        <div class="modal-body">
+          <p>{{ errorMessage }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-primary" style="background-color: #e91429;" (click)="closeErrorModal()">
+            Erneut versuchen
+          </button>
+        </div>
+      </div>
+    </div>
+
     <form (submit)="handleSubmit(); $event.preventDefault()">
       <div class="form-group">
         <label>Benutzername</label>

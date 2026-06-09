@@ -56,8 +56,10 @@ app.use('/api/v1', apiRouter);
 app.use('/api/v1/playlists', playlistRouter);
 
 // SPA Routing: Alle anderen Anfragen an index.html senden
-app.get(/.*/, (req, res) => {
-    if (req.path.startsWith('/api') || req.path.startsWith('/api-docs')) return;
+app.get(/.*/, (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/api-docs')) {
+        return next();
+    }
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 

@@ -18,34 +18,37 @@ const JWT_SECRET = process.env.JWT_SECRET || 'spotifake_geheimnis_123';
 const service = {
     // --- AUTH (USER) ---
     register: async (username, password) => {
-        if (!username || !password) return { error: 'Name und Passwort fehlen!' };
-        
-        // Check if user already exists
-        const User = mongoose.model('User');
-        const existingUser = await User.findOne({ username });
-        if (existingUser) {
-            return { error: 'Benutzername schon vergeben!' };
+        try {
+            if (!username || !password) return { error: 'Name und Passwort fehlen!' };
+            
+            // Check if user already exists
+            const existingUser = await User.findOne({ username });
+            if (existingUser) {
+                return { error: 'Benutzername schon vergeben!' };
+            }
+            
+            // Passwort verschlüsseln
+            const passwordHash = await bcrypt.hash(password, 10);
+            
+            // In die Datenbank speichern
+            const newUser = new User({ username, passwordHash });
+            const savedUser = await newUser.save();
+            
+            // Return nur ID und Username, NICHT das Password Hash
+            return { 
+                success: true, 
+                user: { 
+                    id: savedUser._id, 
+                    username: savedUser.username 
+                } 
+            };
+        } catch (error) {
+            console.error('Registration error in service:', error);
+            return { error: 'Interner Fehler bei der Registrierung' };
         }
-        
-        // Passwort verschlüsseln
-        const passwordHash = await bcrypt.hash(password, 10);
-        
-        // In die Datenbank speichern (via UserRepository)
-        const newUser = new User({ username, passwordHash });
-        const savedUser = await newUser.save();
-        
-        // Return nur ID und Username, NICHT das Password Hash
-        return { 
-            success: true, 
-            user: { 
-                id: savedUser._id, 
-                username: savedUser.username 
-            } 
-        };
     },
 
     login: async (username, password) => {
-        const User = mongoose.model('User');
         const user = await User.findOne({ username });
 
         if (!user || !(await bcrypt.compare(password, user.passwordHash))) {

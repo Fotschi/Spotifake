@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -16,6 +16,7 @@ export class LoginComponent {
   auth = inject(AuthService);
   router = inject(Router);
   playlistService = inject(PlaylistService);
+  cdr = inject(ChangeDetectorRef);
 
   isLoginMode = true;
   username = '';
@@ -24,6 +25,8 @@ export class LoginComponent {
   error = '';
   successMessage = '';
   showSuccessModal = false;
+  showErrorModal = false;
+  errorMessage = '';
   isSubmitting = false; // Prevent multiple rapid submissions
 
   toggleMode() {
@@ -31,6 +34,7 @@ export class LoginComponent {
     this.error = '';
     this.successMessage = '';
     this.showSuccessModal = false;
+    this.showErrorModal = false;
   }
 
   closeSuccessModal() {
@@ -38,6 +42,11 @@ export class LoginComponent {
     this.isLoginMode = true;
     this.username = '';
     this.password = '';
+  }
+
+  closeErrorModal() {
+    this.showErrorModal = false;
+    this.password = ''; // Passwort zurücksetzen für neuen Versuch
   }
 
   async handleSubmit() {
@@ -69,13 +78,14 @@ export class LoginComponent {
           this.error = 'Login fehlgeschlagen. Überprüfe Benutzername und Passwort.';
         }
       } else {
-        const success = await this.auth.register(this.username, this.password);
-        if (success) {
+        const result = await this.auth.register(this.username, this.password);
+        if (result.success) {
           // Show modal instead of just text
           this.showSuccessModal = true;
           this.successMessage = 'Account erfolgreich erstellt! Du kannst dich jetzt einloggen.';
         } else {
-          this.error = 'Registrierung fehlgeschlagen. Benutzername eventuell schon vergeben.';
+          this.showErrorModal = true;
+          this.errorMessage = result.error || 'Registrierung fehlgeschlagen.';
         }
       }
     } finally {
@@ -83,7 +93,9 @@ export class LoginComponent {
       // Reset the submission flag after a small delay to prevent accidental double submissions
       setTimeout(() => {
         this.isSubmitting = false;
+        this.cdr.detectChanges(); // Ensure UI updates even if we lost Zone context
       }, 500);
+      this.cdr.detectChanges(); // Force UI update immediately
     }
   }
 }

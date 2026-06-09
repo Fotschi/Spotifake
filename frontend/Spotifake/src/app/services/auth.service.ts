@@ -74,7 +74,7 @@ export class AuthService {
   }
 
   // Registrieren-Funktion
-  async register(username: string, password: string) {
+  async register(username: string, password: string): Promise<{success: boolean, error?: string}> {
     try {
       const response = await fetch(`${this.apiUrl}/register`, {
         method: 'POST',
@@ -83,20 +83,25 @@ export class AuthService {
       });
 
       if (this.handleAuthError(response)) {
-        return false;
+        return { success: false, error: 'Authentifizierungsfehler' };
       }
 
       // Wenn der Server eine Fehlermeldung in der Response hat
       if (!response.ok) {
-        const errorData = await response.json();
-        console.error('Register error:', errorData);
-        return false;
+        try {
+          const errorData = await response.json();
+          console.error('Register error:', errorData);
+          return { success: false, error: errorData.error || 'Ein Fehler ist aufgetreten.' };
+        } catch (e) {
+          console.error('Register failed with status:', response.status);
+          return { success: false, error: 'Serverfehler.' };
+        }
       }
 
-      return true;
-    } catch (error) {
+      return { success: true };
+    } catch (error: any) {
       console.error('Register Fehler:', error);
-      return false;
+      return { success: false, error: 'Verbindungsfehler. Server antwortet nicht.' };
     }
   }
 

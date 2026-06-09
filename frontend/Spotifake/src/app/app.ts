@@ -52,8 +52,4 @@ export class App implements OnInit {
     // Reset input
     event.target.value = '';
   }
-
-  navigateToPlaylist(playlistId: string) {
-    this.router.navigate(['/playlist', playlistId]);
-  }
 }

@@ -30,9 +30,8 @@
       
       <div class="playlists-list">
         <a *ngFor="let playlist of playlistService.playlists()"
-           (click)="navigateToPlaylist(playlist._id)"
-           href="#"
-           [class.active]="router.isActive('/playlist/' + playlist._id, true)"
+           [routerLink]="['/playlist', playlist._id]"
+           routerLinkActive="active"
            class="playlist-item">
           <img *ngIf="playlist.imagePath" [src]="'/' + playlist.imagePath" class="playlist-mini-img" alt="">
           <span *ngIf="!playlist.imagePath" class="playlist-mini-icon">📁</span>
