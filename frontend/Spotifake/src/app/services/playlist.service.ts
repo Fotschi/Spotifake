@@ -19,6 +19,13 @@ export class PlaylistService {
           'Authorization': `Bearer ${this.authService.getToken()}`
         }
       });
+      
+      // Handle auth errors - don't logout here, just log error
+      if (response.status === 401 || response.status === 403) {
+        console.error('Unauthorized access to playlists');
+        return;
+      }
+      
       if (response.ok) {
         const data = await response.json();
         this.playlists.set(data);
@@ -44,8 +51,13 @@ export class PlaylistService {
         body: formData
       });
       
+      if (response.status === 401 || response.status === 403) {
+        console.error('Unauthorized to create playlist');
+        return null;
+      }
+      
       if (response.ok) {
-        await this.loadPlaylists(); // Liste neu laden
+        await this.loadPlaylists();
         return await response.json();
       }
     } catch (error) {
@@ -68,6 +80,11 @@ export class PlaylistService {
         body: formData
       });
       
+      if (response.status === 401 || response.status === 403) {
+        console.error('Unauthorized to update playlist');
+        return null;
+      }
+      
       if (response.ok) {
         await this.loadPlaylists();
         return await response.json();
@@ -85,8 +102,20 @@ export class PlaylistService {
           'Authorization': `Bearer ${this.authService.getToken()}`
         }
       });
+      
+      // Handle auth errors - return null instead of logging out
+      if (response.status === 401 || response.status === 403) {
+        console.error('Unauthorized to access playlist:', id);
+        return null;
+      }
+      
       if (response.ok) {
         return await response.json();
+      }
+      
+      if (response.status === 404) {
+        console.error('Playlist not found:', id);
+        return null;
       }
     } catch (error) {
       console.error('Fehler beim Laden der Playlist', error);
@@ -104,6 +133,12 @@ export class PlaylistService {
         },
         body: JSON.stringify({ songId })
       });
+      
+      if (response.status === 401 || response.status === 403) {
+        console.error('Unauthorized to add song to playlist');
+        return false;
+      }
+      
       return response.ok;
     } catch (error) {
       console.error('Fehler beim Hinzufügen', error);
@@ -119,6 +154,12 @@ export class PlaylistService {
           'Authorization': `Bearer ${this.authService.getToken()}`
         }
       });
+      
+      if (response.status === 401 || response.status === 403) {
+        console.error('Unauthorized to remove song from playlist');
+        return false;
+      }
+      
       return response.ok;
     } catch (error) {
       console.error('Fehler beim Entfernen', error);
