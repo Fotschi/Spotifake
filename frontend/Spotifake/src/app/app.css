@@ -50,9 +50,12 @@
 }
 
 .nav-item .icon {
-  font-size: 20px;
   width: 24px;
-  text-align: center;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 /* Playlists Section */
@@ -107,15 +110,37 @@
 }
 
 .playlist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   color: #b3b3b3;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  padding: 6px 0;
+  padding: 8px 0;
   transition: color 0.2s;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.playlist-mini-img {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 4px;
+  background-color: #282828;
+}
+
+.playlist-mini-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #282828;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
 .playlist-item:hover, .playlist-item.active {

@@ -32,6 +32,10 @@ const playlistRepository = {
 
     delete: async (id) => {
         return await Playlist.findByIdAndDelete(id);
+    },
+
+    update: async (id, data) => {
+        return await Playlist.findByIdAndUpdate(id, data, { new: true }).populate('songs');
     }
 };
 

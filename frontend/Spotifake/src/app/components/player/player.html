@@ -15,12 +15,12 @@
   <div class="controls-container">
     <div class="controls">
       <div class="main-controls">
-        <button class="control-btn">⏮</button>
+        <button class="control-btn" (click)="music.previous()">⏮</button>
         <button class="control-btn main" (click)="music.togglePlay()">
           <span *ngIf="!music.isPlaying()">▶</span>
           <span *ngIf="music.isPlaying()">⏸</span>
         </button>
-        <button class="control-btn">⏭</button>
+        <button class="control-btn" (click)="music.next()">⏭</button>
       </div>
       
       <div class="playback-bar">

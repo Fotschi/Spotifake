@@ -28,15 +28,20 @@ export class PlaylistService {
     }
   }
 
-  async createPlaylist(name: string) {
+  async createPlaylist(name: string, imageFile?: File) {
     try {
+      const formData = new FormData();
+      formData.append('name', name);
+      if (imageFile) {
+        formData.append('image', imageFile);
+      }
+
       const response = await fetch(this.apiUrl, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.authService.getToken()}`
         },
-        body: JSON.stringify({ name })
+        body: formData
       });
       
       if (response.ok) {
@@ -45,6 +50,30 @@ export class PlaylistService {
       }
     } catch (error) {
       console.error('Fehler beim Erstellen', error);
+    }
+    return null;
+  }
+
+  async updatePlaylist(id: string, name?: string, imageFile?: File) {
+    try {
+      const formData = new FormData();
+      if (name) formData.append('name', name);
+      if (imageFile) formData.append('image', imageFile);
+
+      const response = await fetch(`${this.apiUrl}/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.authService.getToken()}`
+        },
+        body: formData
+      });
+      
+      if (response.ok) {
+        await this.loadPlaylists();
+        return await response.json();
+      }
+    } catch (error) {
+      console.error('Fehler beim Aktualisieren', error);
     }
     return null;
   }

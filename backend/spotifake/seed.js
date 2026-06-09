@@ -8,19 +8,22 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/spotifake'
 async function seed() {
     try {
         await mongoose.connect(MONGO_URI);
-        console.log(' Starte Seeding...');
+        
+        // Prüfen, ob bereits User vorhanden sind
+        const userCount = await User.countDocuments();
+        if (userCount > 0) {
+            console.log('  Datenbank bereits initialisiert. Seeding wird übersprungen.');
+            process.exit(0);
+        }
 
-        // User bereinigen und neu erstellen
-        await User.deleteMany({});
+        console.log('  Starte Seeding (Erster Start)...');
+
         const passwordHash = await bcrypt.hash('password123', 10);
         const testUser = await User.create({
             username: 'testuser',
             passwordHash: passwordHash
         });
-        console.log('Test-User erstellt: testuser / password123');
-
-        // Songs bereinigen
-        await Song.deleteMany({});
+        console.log('  Test-User erstellt: testuser / password123');
         
         const songs = [
             {
@@ -40,12 +43,12 @@ async function seed() {
         ];
 
         await Song.insertMany(songs);
-        console.log('Beispiel Songs erstellt');
+        console.log('  Beispiel Songs erstellt');
 
-        console.log('Seeding fertig!');
+        console.log('  Seeding fertig!');
         process.exit(0);
     } catch (error) {
-        console.error('Fehler beim Seeding:', error);
+        console.error('  Fehler beim Seeding:', error);
         process.exit(1);
     }
 }

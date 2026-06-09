@@ -7,6 +7,7 @@ import { SocketService } from './socket.service';
 export class MusicService {
   songs = signal<any[]>([]);
   currentSong = signal<any>(null);
+  queue = signal<any[]>([]);
   isPlaying = signal(false);
 
   // Fortschritt und Lautstärke
@@ -36,7 +37,7 @@ export class MusicService {
     });
 
     this.audio.addEventListener('ended', () => {
-      this.isPlaying.set(false);
+      this.next();
     });
 
     this.audio.addEventListener('canplay', () => {
@@ -59,8 +60,15 @@ export class MusicService {
     }
   }
 
-  play(song: any) {
+  play(song: any, queue?: any[]) {
     this.currentSong.set(song);
+    
+    if (queue) {
+      this.queue.set(queue);
+    } else if (this.queue().length === 0) {
+      this.queue.set(this.songs());
+    }
+
     this.socketService.sendPlayEvent(song);
 
     const streamUrl = `${this.apiUrl}/${song._id}/stream`;
@@ -78,6 +86,42 @@ export class MusicService {
           this.isPlaying.set(false);
         });
     }
+  }
+
+  next() {
+    const currentQueue = this.queue();
+    const current = this.currentSong();
+    if (!current || currentQueue.length === 0) return;
+
+    const currentIndex = currentQueue.findIndex(s => s._id === current._id);
+    if (currentIndex === -1) {
+      this.play(currentQueue[0]);
+      return;
+    }
+
+    const nextIndex = (currentIndex + 1) % currentQueue.length;
+    this.play(currentQueue[nextIndex]);
+  }
+
+  previous() {
+    const currentQueue = this.queue();
+    const current = this.currentSong();
+    if (!current || currentQueue.length === 0) return;
+
+    // Wenn mehr als 3 Sekunden gespielt, Song neu starten
+    if (this.audio.currentTime > 3) {
+      this.audio.currentTime = 0;
+      return;
+    }
+
+    const currentIndex = currentQueue.findIndex(s => s._id === current._id);
+    if (currentIndex === -1) {
+      this.play(currentQueue[0]);
+      return;
+    }
+
+    const prevIndex = (currentIndex - 1 + currentQueue.length) % currentQueue.length;
+    this.play(currentQueue[prevIndex]);
   }
 
   togglePlay() {

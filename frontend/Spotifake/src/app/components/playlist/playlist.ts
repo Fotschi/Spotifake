@@ -1,6 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PlaylistService } from '../../services/playlist.service';
 import { MusicService } from '../../services/music.service';
 
@@ -13,6 +13,7 @@ import { MusicService } from '../../services/music.service';
 })
 export class PlaylistComponent implements OnInit {
   route = inject(ActivatedRoute);
+  router = inject(Router);
   playlistService = inject(PlaylistService);
   music = inject(MusicService);
 
@@ -44,8 +45,6 @@ export class PlaylistComponent implements OnInit {
   async deletePlaylist() {
     if (!this.playlist) return;
     if (confirm(`Playlist "${this.playlist.name}" wirklich löschen?`)) {
-       const success = await this.playlistService.removeSong(this.playlist._id, 'delete_entire_playlist');
-       // Moment, wir brauchen delete auf der API!
        try {
          const response = await fetch(`/api/v1/playlists/${this.playlist._id}`, {
             method: 'DELETE',
@@ -55,7 +54,7 @@ export class PlaylistComponent implements OnInit {
          });
          if(response.ok) {
            this.playlistService.loadPlaylists();
-           window.location.href = '/';
+           this.router.navigate(['/songs']); // Navigate to song list
          }
        } catch (e) {
          console.error(e);

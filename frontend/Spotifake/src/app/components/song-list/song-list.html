@@ -5,7 +5,7 @@
   </header>
 
   <div class="songs-grid">
-    <div *ngFor="let song of music.songs()" class="song-card" (click)="music.play(song)" [class.active]="music.currentSong()?._id === song._id">
+    <div *ngFor="let song of music.songs()" class="song-card" (click)="music.play(song, music.songs())" [class.active]="music.currentSong()?._id === song._id">
       <div class="card-image">
         <img *ngIf="song.imagePath" [src]="'/' + song.imagePath" class="cover-image" alt="Cover">
         <span *ngIf="!song.imagePath" class="music-icon">🎵</span>

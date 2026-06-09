@@ -1,8 +1,11 @@
 import express from 'express';
+import multer from 'multer';
 import controller from '../../controllers/playlistController.js';
 import checkAuth from '../../middleware/auth.js';
 
 const router = express.Router();
+
+const upload = multer({ dest: 'uploads/' });
 
 // Alle Routen hier benötigen Authentifizierung
 router.use(checkAuth);
@@ -26,8 +29,40 @@ router.get('/', controller.getPlaylists);
  *     tags: [Playlists]
  *     security:
  *       - bearerAuth: []
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               image: { type: string, format: binary }
  */
-router.post('/', controller.create);
+router.post('/', upload.single('image'), controller.create);
+
+/**
+ * @openapi
+ * /api/v1/playlists/{id}:
+ *   put:
+ *     summary: Playlist aktualisieren
+ *     tags: [Playlists]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               image: { type: string, format: binary }
+ */
+router.put('/:id', upload.single('image'), controller.update);
 
 /**
  * @openapi

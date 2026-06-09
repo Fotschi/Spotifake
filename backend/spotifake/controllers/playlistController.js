@@ -16,9 +16,29 @@ const playlistController = {
 
     // Neue Playlist erstellen
     create: async (req, res) => {
-        const result = await service.createPlaylist(req.body.name, req.user.id);
+        const { name } = req.body;
+        let imagePath = null;
+        if (req.file) {
+            imagePath = req.file.path.replace(/\\/g, '/');
+        }
+        const result = await service.createPlaylist(name, req.user.id, imagePath);
         if (result.error) return res.status(400).json(result);
         res.status(201).json(result);
+    },
+
+    // Playlist aktualisieren (Name oder Bild)
+    update: async (req, res) => {
+        const { name } = req.body;
+        const dataToUpdate = {};
+        if (name) dataToUpdate.name = name;
+        
+        if (req.file) {
+            dataToUpdate.imagePath = req.file.path.replace(/\\/g, '/');
+        }
+
+        const result = await service.updatePlaylist(req.params.id, dataToUpdate, req.user.id);
+        if (result.error) return res.status(404).json(result);
+        res.json(result);
     },
 
     // Song hinzufügen

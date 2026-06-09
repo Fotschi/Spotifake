@@ -12,7 +12,9 @@
         Home
       </a>
       <a routerLink="/admin" routerLinkActive="active" class="nav-item">
-        <svg role="img" height="24" width="24" class="icon" viewBox="0 0 24 24" fill="currentColor"><path d="M11.466 22.762c-.783-.162-1.397-.732-1.593-1.503l-.403-1.593c-.45-.2-1.045-.552-1.638-.971l-1.465.733a1.758 1.758 0 0 1-2.18-.548l-1.385-1.9a1.761 1.761 0 0 1 .374-2.22l1.246-.995c-.092-.573-.153-1.127-.174-1.579l-1.593-.404a1.754 1.754 0 0 1-1.32-2.122l.441-2.247a1.755 1.755 0 0 1 2.115-1.332l1.6.405c.427-.406 1-.749 1.602-1.026l.707-1.414a1.757 1.757 0 0 1 2.195-.873l2.253.79a1.761 1.761 0 0 1 1.077 2.062l-.434 1.724c.484.227 1.05.576 1.631.986l1.417-.708a1.757 1.757 0 0 1 2.196.536l1.38 1.888a1.762 1.762 0 0 1-.365 2.227l-1.282 1.025c.08.513.137 1.037.16 1.488l1.62.41a1.755 1.755 0 0 1 1.32 2.112l-.44 2.246a1.757 1.757 0 0 1-2.113 1.332l-1.637-.415c-.417.419-1.003.791-1.637 1.09l-.738 1.478a1.757 1.757 0 0 1-2.213.882l-2.235-.783zM12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm0-1.5a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"></path></svg>
+        <svg role="img" height="24" width="24" class="icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.91,7.62,6.29L5.23,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.72,8.87 c-0.11,0.2-0.06,0.47,0.12,0.61l2.03,1.58C4.84,11.36,4.81,11.68,4.81,12c0,0.32,0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.11-0.2,0.06-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+        </svg>
         Admin
       </a>
     </nav>
@@ -20,16 +22,20 @@
     <div class="playlists-section">
       <div class="playlists-header">
         <span class="playlists-title">PLAYLISTS</span>
-        <button class="btn-create-playlist" (click)="createNewPlaylist()" title="Playlist erstellen">
+        <button class="btn-create-playlist" (click)="fileInput.click()" title="Playlist erstellen">
           <svg role="img" height="16" width="16" viewBox="0 0 16 16" fill="currentColor"><path d="M15.25 8a.75.75 0 0 1-.75.75H8.75v5.75a.75.75 0 0 1-1.5 0V8.75H1.5a.75.75 0 0 1 0-1.5h5.75V1.5a.75.75 0 0 1 1.5 0v5.75h5.75a.75.75 0 0 1 .75.75z"></path></svg>
         </button>
+        <input type="file" #fileInput style="display: none" (change)="onFileSelected($event)" accept="image/*">
       </div>
       
       <div class="playlists-list">
-        <a *ngFor="let playlist of playlistService.playlists()" 
-           [routerLink]="['/playlist', playlist._id]" 
-           routerLinkActive="active" 
+        <a *ngFor="let playlist of playlistService.playlists()"
+           (click)="navigateToPlaylist(playlist._id)"
+           href="#"
+           [class.active]="router.isActive('/playlist/' + playlist._id, true)"
            class="playlist-item">
+          <img *ngIf="playlist.imagePath" [src]="'/' + playlist.imagePath" class="playlist-mini-img" alt="">
+          <span *ngIf="!playlist.imagePath" class="playlist-mini-icon">📁</span>
           {{ playlist.name }}
         </a>
       </div>

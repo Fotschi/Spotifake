@@ -12,9 +12,25 @@ const playlistService = {
         return playlist;
     },
 
-    createPlaylist: async (name, userId) => {
+    createPlaylist: async (name, userId, imagePath = null) => {
         if (!name) return { error: 'Name wird benötigt' };
-        return await playlistRepository.create({ name, owner: userId, songs: [] });
+        return await playlistRepository.create({ 
+            name, 
+            owner: userId, 
+            songs: [],
+            imagePath 
+        });
+    },
+
+    updatePlaylist: async (id, data, userId) => {
+        const playlist = await playlistRepository.findById(id);
+        if (!playlist) return { error: 'Playlist nicht gefunden' };
+        if (playlist.owner.toString() !== userId) return { error: 'Zugriff verweigert' };
+
+        // Wir nutzen hier direkt das Repository (ich muss es evtl. erweitern)
+        // Aber für jetzt machen wir es direkt über das Modell via Repo wenn möglich
+        // Oder wir erweitern das Repo
+        return await playlistRepository.update(id, data);
     },
 
     addSongToPlaylist: async (playlistId, songId, userId) => {

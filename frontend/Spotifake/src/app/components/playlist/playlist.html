@@ -1,7 +1,8 @@
 <div class="playlist-container" *ngIf="playlist">
   <div class="playlist-header">
     <div class="playlist-cover">
-      <span class="icon">🎵</span>
+      <img *ngIf="playlist.imagePath" [src]="'/' + playlist.imagePath" class="playlist-cover-img" alt="Cover">
+      <span *ngIf="!playlist.imagePath" class="icon">🎵</span>
     </div>
     <div class="playlist-info">
       <span class="type">Playlist</span>
@@ -15,6 +16,12 @@
     </div>
   </div>
 
+  <div class="main-actions" *ngIf="playlist.songs.length > 0">
+    <button class="btn-play-all" (click)="music.play(playlist.songs[0], playlist.songs)" title="Playlist abspielen">
+      ▶
+    </button>
+  </div>
+
   <div class="songs-list">
     <div class="list-header">
       <div class="col-title">Titel</div>
@@ -24,7 +31,7 @@
 
     <div *ngFor="let song of playlist.songs" 
          class="song-row" 
-         (click)="music.play(song)" 
+         (click)="music.play(song, playlist.songs)" 
          [class.active]="music.currentSong()?._id === song._id">
       
       <div class="col-title">

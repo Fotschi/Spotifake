@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { PlaylistService } from '../../services/playlist.service';
 
 @Component({
   selector: 'app-login',
@@ -14,6 +15,7 @@ import { Router } from '@angular/router';
 export class LoginComponent {
   auth = inject(AuthService);
   router = inject(Router);
+  playlistService = inject(PlaylistService);
 
   isLoginMode = true;
   username = '';
@@ -38,27 +40,31 @@ export class LoginComponent {
     this.error = '';
     this.successMessage = '';
 
-    if (this.isLoginMode) {
-      const success = await this.auth.login(this.username, this.password);
-      if (success) {
-        this.successMessage = 'Erfolgreich angemeldet! Weiterleitung...';
-        setTimeout(() => {
-          this.router.navigate(['/songs']);
-        }, 1000);
+    try {
+      if (this.isLoginMode) {
+        const success = await this.auth.login(this.username, this.password);
+        if (success) {
+          this.playlistService.loadPlaylists();
+          this.successMessage = 'Erfolgreich angemeldet! Weiterleitung...';
+          setTimeout(() => {
+            this.router.navigate(['/songs']);
+          }, 1000);
+        } else {
+          this.error = 'Login fehlgeschlagen. Überprüfe Benutzername und Passwort.';
+        }
       } else {
-        this.error = 'Login fehlgeschlagen. Überprüfe Benutzername und Passwort.';
+        const success = await this.auth.register(this.username, this.password);
+        if (success) {
+          this.successMessage = 'Account erfolgreich erstellt! Du kannst dich jetzt einloggen.';
+          this.isLoginMode = true;
+          this.username = '';
+          this.password = '';
+        } else {
+          this.error = 'Registrierung fehlgeschlagen. Benutzername eventuell schon vergeben.';
+        }
       }
-    } else {
-      const success = await this.auth.register(this.username, this.password);
-      if (success) {
-        this.successMessage = 'Account erfolgreich erstellt! Du kannst dich jetzt einloggen.';
-        this.isLoginMode = true;
-        this.username = '';
-        this.password = '';
-      } else {
-        this.error = 'Registrierung fehlgeschlagen. Benutzername eventuell schon vergeben.';
-      }
+    } finally {
+      this.loading = false;
     }
-    this.loading = false;
   }
 }

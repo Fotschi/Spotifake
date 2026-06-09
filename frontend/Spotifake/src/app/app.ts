@@ -36,4 +36,24 @@ export class App implements OnInit {
       });
     }
   }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const name = window.prompt('Name der neuen Playlist:');
+    if (name && name.trim()) {
+      this.playlistService.createPlaylist(name.trim(), file).then(newPlaylist => {
+        if (newPlaylist) {
+          this.router.navigate(['/playlist', newPlaylist._id]);
+        }
+      });
+    }
+    // Reset input
+    event.target.value = '';
+  }
+
+  navigateToPlaylist(playlistId: string) {
+    this.router.navigate(['/playlist', playlistId]);
+  }
 }
