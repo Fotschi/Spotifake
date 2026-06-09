@@ -10,7 +10,8 @@ const controller = {
     register: async (req, res) => {
         const result = await service.register(req.body.username, req.body.password);
         if (result.error) return res.status(400).json(result);
-        res.status(201).json(result);
+        // Registration successful
+        res.status(201).json({ success: true, message: 'Benutzer erfolgreich registriert!' });
     },
 
     login: async (req, res) => {
