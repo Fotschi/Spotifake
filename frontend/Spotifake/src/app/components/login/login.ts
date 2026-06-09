@@ -23,19 +23,35 @@ export class LoginComponent {
   loading = false;
   error = '';
   successMessage = '';
+  showSuccessModal = false;
+  isSubmitting = false; // Prevent multiple rapid submissions
 
   toggleMode() {
     this.isLoginMode = !this.isLoginMode;
     this.error = '';
     this.successMessage = '';
+    this.showSuccessModal = false;
+  }
+
+  closeSuccessModal() {
+    this.showSuccessModal = false;
+    this.isLoginMode = true;
+    this.username = '';
+    this.password = '';
   }
 
   async handleSubmit() {
+    // Prevent multiple rapid clicks
+    if (this.isSubmitting) {
+      return;
+    }
+
     if (!this.username || !this.password) {
       this.error = 'Bitte fülle alle Felder aus.';
       return;
     }
 
+    this.isSubmitting = true;
     this.loading = true;
     this.error = '';
     this.successMessage = '';
@@ -55,16 +71,19 @@ export class LoginComponent {
       } else {
         const success = await this.auth.register(this.username, this.password);
         if (success) {
+          // Show modal instead of just text
+          this.showSuccessModal = true;
           this.successMessage = 'Account erfolgreich erstellt! Du kannst dich jetzt einloggen.';
-          this.isLoginMode = true;
-          this.username = '';
-          this.password = '';
         } else {
           this.error = 'Registrierung fehlgeschlagen. Benutzername eventuell schon vergeben.';
         }
       }
     } finally {
       this.loading = false;
+      // Reset the submission flag after a small delay to prevent accidental double submissions
+      setTimeout(() => {
+        this.isSubmitting = false;
+      }, 500);
     }
   }
 }
