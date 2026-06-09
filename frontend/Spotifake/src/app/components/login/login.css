@@ -57,13 +57,18 @@ h1 {
   border-radius: 4px;
   color: #ffffff;
   font-size: 16px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, background-color 0.2s;
 }
 
 .form-group input:focus {
   outline: none;
   border-color: #ffffff;
   background-color: #2a2a2a;
+}
+
+.form-group input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .form-group input::placeholder {
@@ -84,9 +89,14 @@ h1 {
   transition: all 0.2s;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   background-color: #1ed760;
   transform: scale(1.02);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .divider {
@@ -116,9 +126,14 @@ h1 {
   transition: all 0.2s;
 }
 
-.btn-outline:hover {
+.btn-outline:hover:not(:disabled) {
   border-color: #ffffff;
   transform: scale(1.02);
+}
+
+.btn-outline:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .error-box {
@@ -130,4 +145,86 @@ h1 {
   font-size: 14px;
   font-weight: 600;
   text-align: left;
+}
+
+.success-box {
+  background-color: #1db954;
+  color: #000000;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  background-color: #121212;
+  border-radius: 8px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  max-width: 400px;
+  width: 90%;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-header {
+  padding: 24px;
+  border-bottom: 1px solid #292929;
+  text-align: center;
+}
+
+.modal-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1db954;
+  margin: 0;
+}
+
+.modal-body {
+  padding: 24px;
+  text-align: center;
+}
+
+.modal-body p {
+  color: #b3b3b3;
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 12px 0;
+}
+
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid #292929;
+  display: flex;
+  gap: 12px;
+}
+
+.modal-footer .btn-primary {
+  margin-top: 0;
+  flex: 1;
 }
