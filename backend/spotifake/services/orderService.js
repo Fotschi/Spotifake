@@ -20,14 +20,28 @@ const service = {
     register: async (username, password) => {
         if (!username || !password) return { error: 'Name und Passwort fehlen!' };
         
+        // Check if user already exists
+        const User = mongoose.model('User');
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return { error: 'Benutzername schon vergeben!' };
+        }
+        
         // Passwort verschlüsseln
         const passwordHash = await bcrypt.hash(password, 10);
         
         // In die Datenbank speichern (via UserRepository)
-        
-        const User = mongoose.model('User');
         const newUser = new User({ username, passwordHash });
-        return await newUser.save();
+        const savedUser = await newUser.save();
+        
+        // Return nur ID und Username, NICHT das Password Hash
+        return { 
+            success: true, 
+            user: { 
+                id: savedUser._id, 
+                username: savedUser.username 
+            } 
+        };
     },
 
     login: async (username, password) => {
