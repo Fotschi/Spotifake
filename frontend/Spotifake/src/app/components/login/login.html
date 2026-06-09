@@ -6,7 +6,7 @@
   <div class="auth-content">
     <h1>{{ isLoginMode ? 'Melde dich an' : 'Registrieren' }}</h1>
     
-    <div *ngIf="successMessage" class="success-box">
+    <div *ngIf="successMessage && !showSuccessModal" class="success-box">
       {{ successMessage }}
     </div>
 
@@ -14,19 +14,38 @@
       {{ error }}
     </div>
 
+    <!-- Success Modal for Registration -->
+    <div *ngIf="showSuccessModal" class="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h2>✓ Registrierung erfolgreich!</h2>
+        </div>
+        <div class="modal-body">
+          <p>Dein Account wurde erfolgreich erstellt.</p>
+          <p>Du kannst dich jetzt mit deinen Zugangsdaten anmelden.</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-primary" (click)="closeSuccessModal()">
+            Zum Login
+          </button>
+        </div>
+      </div>
+    </div>
+
     <form (submit)="handleSubmit(); $event.preventDefault()">
       <div class="form-group">
         <label>Benutzername</label>
-        <input type="text" [(ngModel)]="username" name="username" placeholder="Benutzername" required>
+        <input type="text" [(ngModel)]="username" name="username" placeholder="Benutzername" required [disabled]="loading">
       </div>
 
       <div class="form-group">
         <label>Passwort</label>
-        <input type="password" [(ngModel)]="password" name="password" placeholder="Passwort" required>
+        <input type="password" [(ngModel)]="password" name="password" placeholder="Passwort" required [disabled]="loading">
       </div>
 
-      <button type="submit" class="btn-primary" [disabled]="loading">
-        {{ isLoginMode ? 'Anmelden' : 'Registrieren' }}
+      <button type="submit" class="btn-primary" [disabled]="loading || isSubmitting">
+        <span *ngIf="!loading">{{ isLoginMode ? 'Anmelden' : 'Registrieren' }}</span>
+        <span *ngIf="loading">{{ isLoginMode ? 'Wird angemeldet...' : 'Wird registriert...' }}</span>
       </button>
     </form>
 
@@ -34,7 +53,7 @@
 
     <div class="toggle-section">
       <p>{{ isLoginMode ? 'Hast du kein Konto?' : 'Hast du bereits ein Konto?' }}</p>
-      <button (click)="toggleMode()" class="btn-outline">
+      <button (click)="toggleMode()" class="btn-outline" [disabled]="loading">
         {{ isLoginMode ? 'KONTO ERSTELLEN' : 'ZUM LOGIN' }}
       </button>
     </div>
