@@ -32,6 +32,16 @@ export class AuthService {
     }
   }
 
+  // Hilfsfunktion für Logout bei Authentifizierungsfehlern
+  private handleAuthError(response: Response) {
+    if (response.status === 401 || response.status === 403) {
+      console.error('Auth failed, logging out');
+      this.logout();
+      return true;
+    }
+    return false;
+  }
+
   // Einloggen-Funktion
   async login(username: string, password: string) {
     try {
@@ -40,6 +50,10 @@ export class AuthService {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password })
       });
+
+      if (this.handleAuthError(response)) {
+        return false;
+      }
 
       if (!response.ok) {
         return false;
@@ -68,7 +82,18 @@ export class AuthService {
         body: JSON.stringify({ username, password })
       });
 
-      return response.ok;
+      if (this.handleAuthError(response)) {
+        return false;
+      }
+
+      // Wenn der Server eine Fehlermeldung in der Response hat
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Register error:', errorData);
+        return false;
+      }
+
+      return true;
     } catch (error) {
       console.error('Register Fehler:', error);
       return false;
